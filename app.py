@@ -2,7 +2,7 @@ import sys
 import statistics
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit,
-    QMainWindow, QAction, QMessageBox
+    QMainWindow, QAction, QMessageBox, QFileDialog
 )
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
@@ -32,21 +32,40 @@ class DayAssessmentApp(QMainWindow):
 
         # Period input dropdowns
         self.periods = []
-        options = ["Very Bad", "Bad", "OK", "Good", "Great"]
-        for i in range(1, 9):
-            label = QLabel(f"Period {i}:")
-            label.setAlignment(Qt.AlignLeft)
-            combo_box = QComboBox()
-            combo_box.addItems(options)
-            combo_box.setCurrentIndex(3)  # Default to "Good"
-            form_layout.addWidget(label)
-            form_layout.addWidget(combo_box)
-            self.periods.append(combo_box)
+        self.subjects = []
+        subject_options = ["Math", "Science", "English", "History", "Art", "Physical Education", "Music", "Other"]
+        rating_options = ["Very Bad", "Bad", "OK", "Good", "Great"]
         
+        for i in range(1, 9):
+            period_layout = QHBoxLayout()  # Horizontal layout for each period
+
+            subject_combo_box = QComboBox()
+            subject_combo_box.addItems(subject_options)
+            self.subjects.append(subject_combo_box)
+            
+            rating_combo_box = QComboBox()
+            rating_combo_box.addItems(rating_options)
+            rating_combo_box.setCurrentIndex(3)  # Default to "Good"
+            self.periods.append(rating_combo_box)
+            
+            period_label = QLabel(f"Period {i}:")
+            period_label.setAlignment(Qt.AlignLeft)
+
+            period_layout.addWidget(period_label)
+            period_layout.addWidget(subject_combo_box)
+            period_layout.addWidget(rating_combo_box)
+
+            form_layout.addLayout(period_layout)
+            
         # Calculate button
         self.calc_button = QPushButton("Calculate")
         self.calc_button.clicked.connect(self.calculate_day)
         button_layout.addWidget(self.calc_button)
+        
+        # Save button
+        self.save_button = QPushButton("Save Result to Text File")
+        self.save_button.clicked.connect(self.save_result)
+        button_layout.addWidget(self.save_button)
         
         # Result text box
         self.result_box = QTextEdit()
@@ -105,6 +124,7 @@ class DayAssessmentApp(QMainWindow):
         }
         
         scores = [score_mapping[period.currentText()] for period in self.periods]
+        subjects = [subject.currentText() for subject in self.subjects]
         
         # Check if there was any "Very Bad" period
         if any(score == 0 for score in scores):
@@ -130,13 +150,33 @@ class DayAssessmentApp(QMainWindow):
                 assessment = "Your day was bad."
                 color = QColor(255, 0, 0)  # Red
         
+        # Format the result
+        result_text = f"{self.name_edit.toPlainText()}'s DayRank Report:\n\n"
+        for i, (subject, score) in enumerate(zip(subjects, scores), start=1):
+            result_text += f"Period {i} - {subject}: {score}%\n"
+        result_text += f"\nMedian Score: {median_score}%\n{assessment}"
+        
         # Update the result box
         self.result_box.setText(f"{self.name_edit.toPlainText()}'s median score for the day is: {median_score}%\n{assessment}")
         self.result_box.setStyleSheet(f"background-color: {color.name()}; color: black;")
         self.result_box.show()
+        
+        # Store the result for saving
+        self.result_to_save = result_text
+
+    def save_result(self):
+        if hasattr(self, 'result_to_save'):
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog
+            file_name, _ = QFileDialog.getSaveFileName(self, "Save DayRank Report", "", "Text Files (*.txt);;All Files (*)", options=options)
+            if file_name:
+                with open(file_name, 'w') as file:
+                    file.write(self.result_to_save)
+                QMessageBox.information(self, "Saved", "DayRank Report saved successfully.")
+        else:
+            QMessageBox.warning(self, "Error", "No result to save. Please calculate the day first.")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = DayAssessmentApp()
     sys.exit(app.exec_())
-
