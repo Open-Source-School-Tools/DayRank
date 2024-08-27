@@ -77,16 +77,23 @@ class DayAssessmentApp(QMainWindow):
         help_menu.addAction(about_action)
         
     def show_about_dialog(self):
+        logo_path = "Res/logo-easy.png"
         about_text = (
-            "DayRank\n\n"
-            "Version 1.0\n"
-            "This tool helps students assess their school day by allowing them to rate each period "
-            "and calculate the median score. The program provides feedback on how the day went based "
-            "on the calculated score.\n\n"
-            "Created by DevelopCMD (https://github.com/DevelopCMD) \n"
-            "Part of the Open Source School Tools Collection"
+            f"<div style='display: flex; align-items: center;'>"
+            f"<img src='{logo_path}' width='50' height='50' style='margin-right: 15px;'>"
+            f"<div>"
+            f"<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>DayRank</h1>"
+            f"<p>Version Dev</p>"
+            f"<p>This tool helps students assess their school day by allowing them to rate each period "
+            f"and calculate the median score. The program provides feedback on how the day went based "
+            f"on the calculated score.</p>"
+            f"<p>Created by DevelopCMD (https://gihtub.com/DevelopCMD)</p>"
+            f"<p>Part of the Open Source School Tools Collection</p>"
+            f"</div>"
+            f"<p>This program is licensed under the GNU-GPL license.</p>"
+            f"</div>"
         )
-        QMessageBox.about(self, "About School Day Assessment", about_text)
+        QMessageBox.about(self, "About DayRank", about_text)
         
     def calculate_day(self):
         score_mapping = {
