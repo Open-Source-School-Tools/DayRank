@@ -38,6 +38,7 @@ class DayAssessmentApp(QMainWindow):
             label.setAlignment(Qt.AlignLeft)
             combo_box = QComboBox()
             combo_box.addItems(options)
+            combo_box.setCurrentIndex(3)  # Default to "Good"
             form_layout.addWidget(label)
             form_layout.addWidget(combo_box)
             self.periods.append(combo_box)
@@ -97,23 +98,30 @@ class DayAssessmentApp(QMainWindow):
         }
         
         scores = [score_mapping[period.currentText()] for period in self.periods]
-        median_score = statistics.median(scores)
         
-        if median_score == 100:
-            assessment = "Your day was excellent!"
-            color = QColor(0, 255, 0)  # Green
-        elif 75 <= median_score < 100:
-            assessment = "Your day was good."
-            color = QColor(144, 238, 144)  # Light green
-        elif 50 <= median_score < 75:
-            assessment = "Your day was okay."
-            color = QColor(255, 255, 0)  # Yellow
-        elif 25 <= median_score < 50:
-            assessment = "Your day wasn't great."
-            color = QColor(255, 165, 0)  # Orange
-        else:
-            assessment = "Your day was bad."
+        # Check if there was any "Very Bad" period
+        if any(score == 0 for score in scores):
+            # If there is a "Very Bad" period, penalize the median score
+            median_score = max(0, statistics.median(scores) - 25)  # Apply a penalty
+            assessment = "Your day was significantly impacted with very bad period(s)."
             color = QColor(255, 0, 0)  # Red
+        else:
+            median_score = statistics.median(scores)
+            if median_score == 100:
+                assessment = "Your day was excellent!"
+                color = QColor(0, 255, 0)  # Green
+            elif 75 <= median_score < 100:
+                assessment = "Your day was good."
+                color = QColor(144, 238, 144)  # Light green
+            elif 50 <= median_score < 75:
+                assessment = "Your day was okay."
+                color = QColor(255, 255, 0)  # Yellow
+            elif 25 <= median_score < 50:
+                assessment = "Your day wasn't great."
+                color = QColor(255, 165, 0)  # Orange
+            else:
+                assessment = "Your day was bad."
+                color = QColor(255, 0, 0)  # Red
         
         # Update the result box
         self.result_box.setText(f"{self.name_edit.toPlainText()}'s median score for the day is: {median_score}%\n{assessment}")
