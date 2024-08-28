@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
+from qt_material import apply_stylesheet
 
 class DayAssessmentApp(QMainWindow):
     def __init__(self):
@@ -26,7 +27,7 @@ class DayAssessmentApp(QMainWindow):
         self.name_label = QLabel("Student's Name:")
         self.name_label.setAlignment(Qt.AlignLeft)
         self.name_edit = QTextEdit()
-        self.name_edit.setFixedHeight(30)
+        self.name_edit.setFixedHeight(35)
         form_layout.addWidget(self.name_label)
         form_layout.addWidget(self.name_edit)
 
@@ -70,7 +71,7 @@ class DayAssessmentApp(QMainWindow):
         # Result text box
         self.result_box = QTextEdit()
         self.result_box.setReadOnly(True)
-        self.result_box.setFixedHeight(50)
+        self.result_box.setFixedHeight(70)
         self.result_box.hide()
         
         # Adding layouts to main layout
@@ -88,18 +89,25 @@ class DayAssessmentApp(QMainWindow):
         
     def create_menu_bar(self):
         menubar = self.menuBar()
-        help_menu = menubar.addMenu('Help')
         
+        # Help Menu
+        help_menu = menubar.addMenu('Help')
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about_dialog)
-        
         help_menu.addAction(about_action)
         
+    def set_light_mode(self):
+        QApplication.setStyle('')
+
+    def set_dark_mode(self):
+        QApplication.setStyle('Fusion')
+        
     def show_about_dialog(self):
-        logo_path = "Res/logo-easy.png"
+        logo_path = "Res/logodarb.png"
+        qt_logo_path = "Res/qt.png"
         about_text = (
             f"<div style='display: flex; align-items: center;'>"
-            f"<img src='{logo_path}' width='50' height='50' style='margin-right: 15px;'>"
+            f"<img src='{logo_path}' height='75' style='margin-right: 15px;'>"
             f"<div>"
             f"<h1 style='margin: 0; font-size: 24px; font-weight: bold;'>DayRank</h1>"
             f"<p>Version Dev</p>"
@@ -108,9 +116,17 @@ class DayAssessmentApp(QMainWindow):
             f"on the calculated score.</p>"
             f"<p>Created by DevelopCMD (https://gihtub.com/DevelopCMD)</p>"
             f"<p>Part of the Open Source School Tools Collection</p>"
-            f"</div>"
             f"<p>This program is licensed under the GNU-GPL license.</p>"
+            f"<div style='display: flex; align-items: center; margin-top: 20px;'>"
+            f"<img src='{qt_logo_path}' height='50' style='margin-right: 10px;'>"
+            f"<p>Made with <b>Qt</b></p>"
+            f"<p>This program uses Qt version 5.15.11. "
+            f"Qt and the Qt logo are trademarks of The Qt Company Ltd.</p>"
             f"</div>"
+            f"</div>"
+            f"</div>"
+            f"</div>"
+            
         )
         QMessageBox.about(self, "About DayRank", about_text)
         
@@ -136,19 +152,19 @@ class DayAssessmentApp(QMainWindow):
             median_score = statistics.median(scores)
             if median_score == 100:
                 assessment = "Your day was excellent!"
-                color = QColor(0, 255, 0)  # Green
+                color = QColor(25, 200, 30)  # Green
             elif 75 <= median_score < 100:
                 assessment = "Your day was good."
-                color = QColor(144, 238, 144)  # Light green
+                color = QColor(85, 195, 90)  # Light green
             elif 50 <= median_score < 75:
                 assessment = "Your day was okay."
-                color = QColor(255, 255, 0)  # Yellow
+                color = QColor(185, 175, 15)  # Yellow
             elif 25 <= median_score < 50:
                 assessment = "Your day wasn't great."
-                color = QColor(255, 165, 0)  # Orange
+                color = QColor(215, 120, 15)  # Orange
             else:
                 assessment = "Your day was bad."
-                color = QColor(255, 0, 0)  # Red
+                color = QColor(215, 15, 15)  # Red
         
         # Format the result
         result_text = f"{self.name_edit.toPlainText()}'s DayRank Report:\n\n"
@@ -158,7 +174,7 @@ class DayAssessmentApp(QMainWindow):
         
         # Update the result box
         self.result_box.setText(f"{self.name_edit.toPlainText()}'s median score for the day is: {median_score}%\n{assessment}")
-        self.result_box.setStyleSheet(f"background-color: {color.name()}; color: black;")
+        self.result_box.setStyleSheet(f"background-color: {color.name()}; color: white;")
         self.result_box.show()
         
         # Store the result for saving
@@ -178,5 +194,6 @@ class DayAssessmentApp(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    apply_stylesheet(app, theme='light_blue.xml')
     ex = DayAssessmentApp()
     sys.exit(app.exec_())
