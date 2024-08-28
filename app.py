@@ -2,11 +2,16 @@ import sys
 import statistics
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QTextEdit,
-    QMainWindow, QAction, QMessageBox, QFileDialog
+    QMainWindow, QAction, QMessageBox, QFileDialog, QGridLayout
 )
 from PyQt5.QtGui import QColor
 from PyQt5.QtCore import Qt
 from qt_material import apply_stylesheet
+
+# 
+#    - - -  D A Y R A N K  - - -
+#
+# Property of DayRank - This code is licensed under GPL
 
 class DayAssessmentApp(QMainWindow):
     def __init__(self):
@@ -18,10 +23,10 @@ class DayAssessmentApp(QMainWindow):
         # Central widget and layout
         central_widget = QWidget(self)
         main_layout = QVBoxLayout(central_widget)
-        self.setCentralWidget(central_widget)
-        
         form_layout = QVBoxLayout()
         button_layout = QHBoxLayout()
+        grid_layout = QGridLayout()
+        self.setCentralWidget(central_widget)
         
         # Name input
         self.name_label = QLabel("Student's Name:")
@@ -30,7 +35,13 @@ class DayAssessmentApp(QMainWindow):
         self.name_edit.setFixedHeight(35)
         form_layout.addWidget(self.name_label)
         form_layout.addWidget(self.name_edit)
-
+        
+        # Create a layout for headers
+        header_subject = QLabel("Subject")
+        header_rating = QLabel("Rating")
+        grid_layout.addWidget(header_subject, 0, 0)  # Add Subject header
+        grid_layout.addWidget(header_rating, 0, 1)
+        
         # Period input dropdowns
         self.periods = []
         self.subjects = []
@@ -58,6 +69,7 @@ class DayAssessmentApp(QMainWindow):
 
             form_layout.addLayout(period_layout)
             
+        
         # Calculate button
         self.calc_button = QPushButton("Calculate")
         self.calc_button.clicked.connect(self.calculate_day)
@@ -114,7 +126,7 @@ class DayAssessmentApp(QMainWindow):
             f"<p>This tool helps students assess their school day by allowing them to rate each period "
             f"and calculate the median score. The program provides feedback on how the day went based "
             f"on the calculated score.</p>"
-            f"<p>Created by DevelopCMD (https://gihtub.com/DevelopCMD)</p>"
+            f"<p>Created by DevelopCMD (https://github.com/DevelopCMD)</p>"
             f"<p>Part of the Open Source School Tools Collection</p>"
             f"<p>This program is licensed under the GNU-GPL license.</p>"
             f"<div style='display: flex; align-items: center; margin-top: 20px;'>"
@@ -138,7 +150,7 @@ class DayAssessmentApp(QMainWindow):
             "Good": 75,
             "Great": 100
         }
-        
+    
         scores = [score_mapping[period.currentText()] for period in self.periods]
         subjects = [subject.currentText() for subject in self.subjects]
         
