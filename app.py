@@ -108,11 +108,17 @@ class DayAssessmentApp(QMainWindow):
         about_action.triggered.connect(self.show_about_dialog)
         help_menu.addAction(about_action)
         
-    def set_light_mode(self):
-        QApplication.setStyle('')
-
-    def set_dark_mode(self):
-        QApplication.setStyle('Fusion')
+        # Adding theme toggle
+        view_menu = menubar.addMenu("View")
+        theme_toggle = QAction("Toggle Dark Mode", self, checkable=True)
+        theme_toggle.triggered.connect(self.toggle_dark_mode)
+        view_menu.addAction(theme_toggle)
+        
+    def toggle_dark_mode(self, checked):
+        if checked:
+            apply_stylesheet(app, theme='dark_blue.xml')
+        else:
+            apply_stylesheet(app, theme='light_blue.xml')
         
     def show_about_dialog(self):
         logo_path = "Res/logodarb.png"
