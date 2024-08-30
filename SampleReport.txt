@@ -1,0 +1,13 @@
+John Doe's DayRank Report:
+
+Period 1 - English: 75%
+Period 2 - History: 50%
+Period 3 - Art: 75%
+Period 4 - Science: 100%
+Period 5 - Physical Education: 75%
+Period 6 - Music: 100%
+Period 7 - Other: 50%
+Period 8 - Other: 75%
+
+Median Score: 75.0%
+Your day was good.
